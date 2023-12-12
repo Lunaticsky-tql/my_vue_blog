@@ -3,4 +3,4 @@ __pycache__/
 venv/
 .env
 app.db
-madblog.log*
+myblog.log*
