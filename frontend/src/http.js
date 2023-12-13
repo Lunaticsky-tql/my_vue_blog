@@ -3,9 +3,10 @@ import axios from 'axios'
 import router from './router'
 import store from './store'
 
+
 // 基础配置
 axios.defaults.timeout = 5000  // 超时时间
-axios.defaults.baseURL = 'http://localhost:5003/api'
+axios.defaults.baseURL = 'http://localhost:5003'
 
 // Add a request interceptor
 axios.interceptors.request.use(function (config) {
@@ -40,8 +41,13 @@ axios.interceptors.response.use(function (response) {
       }
       break
 
+    case 403:
+      Vue.toasted.error('403: Forbidden', { icon: 'fingerprint' })
+      router.back()
+      break
+
     case 404:
-      Vue.toasted.error('404: NOT FOUND', { icon: 'fingerprint' })
+      Vue.toasted.error('404: Not Found', { icon: 'fingerprint' })
       router.back()
       break
   }
