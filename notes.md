@@ -15,3 +15,7 @@
         return User.query.get(payload.get('user_id'))
 ```
 此处不需要`encode('utf-8')`
+
+2.
+`TypeError: Query.paginate() takes 1 positional argument but 3 were given`
+如报错所述，全换成可选参数形式
