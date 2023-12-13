@@ -6,7 +6,7 @@ from app.api.auth import token_auth
 from app.api.errors import bad_request, error_response
 from app.extensions import db
 from app.models import User, Post
-
+from sqlalchemy import text
 
 @bp.route('/users/', methods=['POST'])
 def create_user():
@@ -166,9 +166,13 @@ def get_followeds(id):
         item['is_following'] = g.current_user.is_following(
             User.query.get(item['id']))
         # 获取用户开始关注 followed 的时间
-        res = db.engine.execute(
-            "select * from followers where follower_id={} and followed_id={}".
-            format(user.id, item['id']))
+        # res = db.engine.execute(
+        #     "select * from followers where follower_id={} and followed_id={}".
+        #     format(user.id, item['id']))
+        with db.engine.connect() as con:
+            res = con.execute(text(
+                "select * from followers where follower_id={} and followed_id={}".
+                format(user.id, item['id'])))
         item['timestamp'] = datetime.strptime(
             list(res)[0][2], '%Y-%m-%d %H:%M:%S.%f')
     return jsonify(data)
@@ -189,9 +193,13 @@ def get_followers(id):
         item['is_following'] = g.current_user.is_following(
             User.query.get(item['id']))
         # 获取 follower 开始关注该用户的时间
-        res = db.engine.execute(
-            "select * from followers where follower_id={} and followed_id={}".
-            format(item['id'], user.id))
+        # res = db.engine.execute(
+        #     "select * from followers where follower_id={} and followed_id={}".
+        #     format(item['id'], user.id))
+        with db.engine.connect() as con:
+            res = con.execute(text(
+                "select * from followers where follower_id={} and followed_id={}".
+                format(item['id'], user.id)))
         item['timestamp'] = datetime.strptime(
             list(res)[0][2], '%Y-%m-%d %H:%M:%S.%f')
     return jsonify(data)
@@ -216,6 +224,7 @@ def get_user_posts(id):
 
 
 @bp.route('/users/<int:id>/followeds-posts/', methods=['GET'])
+@token_auth.login_required
 def get_user_followed_posts(id):
     user = User.query.get_or_404(id)
     page = request.args.get('page', 1, type=int)

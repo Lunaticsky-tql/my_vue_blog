@@ -89,13 +89,13 @@ export default {
         })
         .catch((error) => {
           // handle error
-          console.log(error)
-          
-          if (error.response.status == 401) {
-            this.loginForm.usernameError = 'Invalid username or password.'
-            this.loginForm.passwordError = 'Invalid username or password.'
-          } else {
-            console.log(error.response)
+          if (typeof error.response != 'undefined') {
+            if (error.response.status == 401) {
+              this.loginForm.usernameError = 'Invalid username or password.'
+              this.loginForm.passwordError = 'Invalid username or password.'
+            } else {
+              console.log(error.response)
+            }
           }
         })
     }
