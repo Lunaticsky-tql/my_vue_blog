@@ -330,7 +330,7 @@ class UsersAPITestCase(unittest.TestCase):
         json_response = json.loads(response.get_data(as_text=True))
         self.assertEqual(json_response['message'], 'You are not following david anymore.')
 
-        
+
     def test_get_followeds(self):
         # 测试获取你已关注的人的列表
         u1 = User(username='john', email='john@163.com')
@@ -351,8 +351,9 @@ class UsersAPITestCase(unittest.TestCase):
         response = self.client.get('/api/users/1/followeds/', headers=headers)
         self.assertEqual(response.status_code, 200)
         json_response = json.loads(response.get_data(as_text=True))
-        self.assertEqual(json_response['items'][0]['username'], 'david')
-        self.assertEqual(json_response['items'][1]['username'], 'susan')
+        # 最新关注的人在最前面
+        self.assertEqual(json_response['items'][0]['username'], 'susan')
+        self.assertEqual(json_response['items'][1]['username'], 'david')
 
     def test_get_followers(self):
         # 测试获取你的粉丝列表
@@ -374,8 +375,9 @@ class UsersAPITestCase(unittest.TestCase):
         response = self.client.get('/api/users/1/followers/', headers=headers)
         self.assertEqual(response.status_code, 200)
         json_response = json.loads(response.get_data(as_text=True))
-        self.assertEqual(json_response['items'][0]['username'], 'david')
-        self.assertEqual(json_response['items'][1]['username'], 'susan')
+        # 最新关注的人在最前面
+        self.assertEqual(json_response['items'][0]['username'], 'susan')
+        self.assertEqual(json_response['items'][1]['username'], 'david')
 
     def test_get_user_posts(self):
         # 测试返回用户自己的博客列表
