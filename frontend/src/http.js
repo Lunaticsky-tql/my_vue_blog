@@ -6,9 +6,7 @@ import store from './store'
 
 // 基础配置
 axios.defaults.baseURL = 'http://localhost:5003'
-// axios.defaults.timeout = 5000  // 超时时间（毫秒）
-// axios.defaults.retry = 2  // 重试次数
-// axios.defaults.retryDelay = 100  // 重试之间的间隔时间（毫秒）
+
 
 // 请求拦截器
 // Add a request interceptor
