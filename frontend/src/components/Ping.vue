@@ -7,6 +7,10 @@
     </alert>
 
     <button type="button" class="btn btn-primary">{{ msg }}</button>
+
+    <span class="d-inline-block g-pos-rel g-mr-20 g-mb-20">
+      <span class="u-badge-v2--xs u-badge--top-left g-bg-red g-mt-7 g-ml-7"></span>
+    </span>
   </div>
 </template>
 
