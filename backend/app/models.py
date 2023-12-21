@@ -51,6 +51,17 @@ comments_likes = db.Table(
     db.Column('timestamp', db.DateTime, default=datetime.utcnow)
 )
 
+# 喜欢文章
+posts_likes = db.Table(
+    'posts_likes',
+    db.Column('user_id', db.Integer, db.ForeignKey('users.id')),
+    db.Column('post_id', db.Integer, db.ForeignKey('posts.id')),
+    db.Column('timestamp', db.DateTime, default=datetime.utcnow)
+)
+
+
+
+
 # 黑名单(user_id 屏蔽 block_id)
 blacklist = db.Table(
     'blacklist',
@@ -85,7 +96,7 @@ class User(PaginatedAPIMixin, db.Model):
     comments = db.relationship('Comment', backref='author', lazy='dynamic',
                                cascade='all, delete-orphan')
     # 用户最后一次查看 收到的评论 页面的时间，用来判断哪些收到的评论是新的
-    last_recived_comments_read_time = db.Column(db.DateTime)
+    last_received_comments_read_time = db.Column(db.DateTime)
     # 用户最后一次查看 用户的粉丝 页面的时间，用来判断哪些粉丝是新的
     last_follows_read_time = db.Column(db.DateTime)
     # 用户最后一次查看 收到的点赞 页面的时间，用来判断哪些点赞是新的
@@ -230,13 +241,13 @@ class User(PaginatedAPIMixin, db.Model):
         db.session.add(n)
         return n
 
-    def new_recived_comments(self):
+    def new_received_comments(self):
         '''用户收到的新评论计数
         包括:
         1. 用户的所有文章下面新增的评论
         2. 用户发表的评论(或下面的子孙)被人回复了
         '''
-        last_read_time = self.last_recived_comments_read_time or datetime(1900, 1, 1)
+        last_read_time = self.last_received_comments_read_time or datetime(1900, 1, 1)
         # 用户发布的所有文章
         user_posts_ids = [post.id for post in self.posts.all()]
         # 用户文章下面的新评论, 即评论的 post_id 在 user_posts_ids 集合中，且评论的 author 不是自己(文章的作者)
@@ -248,9 +259,9 @@ class User(PaginatedAPIMixin, db.Model):
             q2 = q2 | c.get_descendants()
         q2 = q2 - set(self.comments.all())  # 除去子孙中，用户自己发的(因为是多级评论，用户可能还会在子孙中盖楼)，自己回复的不用通知
         # 用户收到的总评论集合为 q1 与 q2 的并集
-        recived_comments = q1 | q2
+        received_comments = q1 | q2
         # 最后，再过滤掉 last_read_time 之前的评论
-        return len([c for c in recived_comments if c.timestamp > last_read_time])
+        return len([c for c in received_comments if c.timestamp > last_read_time])
 
     def new_follows(self):
         '''用户的新粉丝计数'''
@@ -280,7 +291,7 @@ class User(PaginatedAPIMixin, db.Model):
         last_read_time = self.last_followeds_posts_read_time or datetime(1900, 1, 1)
         return self.followeds_posts().filter(Post.timestamp > last_read_time).count()
 
-    def new_recived_messages(self):
+    def new_received_messages(self):
         '''用户未读的私信计数'''
         last_read_time = self.last_messages_read_time or datetime(1900, 1, 1)
         return Message.query.filter_by(recipient=self).filter(

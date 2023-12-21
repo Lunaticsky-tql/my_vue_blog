@@ -23,7 +23,7 @@ def create_comment():
     comment.from_dict(data)
     comment.author = g.current_user
     comment.post = post
-    # 必须先添加该评论，后续给各用户发送通知时，User.new_recived_comments() 才能是更新后的值
+    # 必须先添加该评论，后续给各用户发送通知时，User.new_received_comments() 才能是更新后的值
     db.session.add(comment)
     db.session.commit()  # 更新数据库，添加评论记录
     # 添加评论时:
@@ -36,8 +36,8 @@ def create_comment():
         users = users | ancestors_authors
     # 给各用户发送新评论通知
     for u in users:
-        u.add_notification('unread_recived_comments_count',
-                           u.new_recived_comments())
+        u.add_notification('unread_received_comments_count',
+                           u.new_received_comments())
     db.session.commit()  # 更新数据库，写入新通知
     response = jsonify(comment.to_dict())
     response.status_code = 201
@@ -100,13 +100,13 @@ def delete_comment(id):
     if comment.parent:
         ancestors_authors = {c.author for c in comment.get_ancestors()}
         users = users | ancestors_authors
-    # 必须先删除该评论，后续给各用户发送通知时，User.new_recived_comments() 才能是更新后的值
+    # 必须先删除该评论，后续给各用户发送通知时，User.new_received_comments() 才能是更新后的值
     db.session.delete(comment)
     db.session.commit()  # 更新数据库，删除评论记录
     # 给各用户发送新评论通知
     for u in users:
-        u.add_notification('unread_recived_comments_count',
-                           u.new_recived_comments())
+        u.add_notification('unread_received_comments_count',
+                           u.new_received_comments())
     db.session.commit()  # 更新数据库，写入新通知
     return '', 204
 
@@ -121,15 +121,15 @@ def like_comment(id):
     comment = Comment.query.get_or_404(id)
     comment.liked_by(g.current_user)
     db.session.add(comment)
-    # 切记要先提交，先添加点赞记录到数据库，因为 new_likes() 会查询 comments_likes 关联表
+    # 切记要先提交，先添加点赞记录到数据库，因为 new_comments_likes() 会查询 comments_likes 关联表
     db.session.commit()
     # 给评论作者发送新点赞通知
-    comment.author.add_notification('unread_likes_count',
-                                    comment.author.new_likes())
+    comment.author.add_notification('unread_comments_likes_count',
+                                    comment.author.new_comments_likes())
     db.session.commit()
     return jsonify({
         'status': 'success',
-        'message': 'You are now liking comment [ id: %d ].' % id
+        'message': 'You are now liking this comment.'
     })
 
 
@@ -140,13 +140,13 @@ def unlike_comment(id):
     comment = Comment.query.get_or_404(id)
     comment.unliked_by(g.current_user)
     db.session.add(comment)
-    # 切记要先提交，先添加点赞记录到数据库，因为 new_likes() 会查询 comments_likes 关联表
+    # 切记要先提交，先添加点赞记录到数据库，因为 new_comments_likes() 会查询 comments_likes 关联表
     db.session.commit()
     # 给评论作者发送新点赞通知(需要自动减1)
-    comment.author.add_notification('unread_likes_count',
-                                    comment.author.new_likes())
+    comment.author.add_notification('unread_comments_likes_count',
+                                    comment.author.new_comments_likes())
     db.session.commit()
     return jsonify({
         'status': 'success',
-        'message': 'You are not liking comment [ id: %d ] anymore.' % id
+        'message': 'You are not liking this comment anymore.'
     })

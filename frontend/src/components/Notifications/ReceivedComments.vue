@@ -16,7 +16,7 @@
       <!-- Panel Header -->
       <div class="card-header d-flex align-items-center justify-content-between g-bg-gray-light-v5 border-0 g-mb-15">
         <h3 class="h6 mb-0">
-          <i class="icon-bubbles g-pos-rel g-top-1 g-mr-5"></i> Recived Comments <small v-if="comments">(共 {{ comments._meta.total_items }} 条, {{ comments._meta.total_pages }} 页)</small>
+          <i class="icon-bubbles g-pos-rel g-top-1 g-mr-5"></i> received Comments <small v-if="comments">(共 {{ comments._meta.total_items }} 条, {{ comments._meta.total_pages }} 页)</small>
         </h3>
         <div class="dropdown g-mb-10 g-mb-0--md">
           <span class="d-block g-color-primary--hover g-cursor-pointer g-mr-minus-5 g-pa-5" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -146,7 +146,7 @@ import '../../assets/bootstrap-markdown/js/bootstrap-markdown.zh.js'
 import '../../assets/bootstrap-markdown/js/marked.js'
 
 export default {
-  name: 'RecivedComments',  // this is the name of the component
+  name: 'receivedComments',  // this is the name of the component
   components: {
     VueMarkdown,
     Pagination
@@ -167,7 +167,7 @@ export default {
     }
   },
   methods: {
-    getUserRecivedComments (id) {
+    getUserreceivedComments (id) {
       let page = 1
       let per_page = 5
       if (typeof this.$route.query.page != 'undefined') {
@@ -178,7 +178,7 @@ export default {
         per_page = this.$route.query.per_page
       }
       
-      const path = `/api/users/${id}/recived-comments/?page=${page}&per_page=${per_page}`
+      const path = `/api/users/${id}/received-comments/?page=${page}&per_page=${per_page}`
       this.$axios.get(path)
         .then((response) => {
           // handle success
@@ -251,7 +251,7 @@ export default {
           // handle success
           // 前往查看
           this.$toasted.success('Successed mark this comment to be readed.', { icon: 'fingerprint' })
-          this.getUserRecivedComments(this.sharedState.user_id)
+          this.getUserreceivedComments(this.sharedState.user_id)
         })
         .catch((error) => {
           // handle error
@@ -276,7 +276,7 @@ export default {
             .then((response) => {
               // handle success
               this.$swal('Deleted', 'You successfully deleted this comment', 'success')
-              this.getUserRecivedComments(this.sharedState.user_id)
+              this.getUserreceivedComments(this.sharedState.user_id)
             })
             .catch((error) => {
               // handle error
@@ -294,7 +294,7 @@ export default {
         .then((response) => {
           // handle success
           this.$swal('Success', 'You successfully disabled this comment', 'success')
-          this.getUserRecivedComments(this.sharedState.user_id)
+          this.getUserreceivedComments(this.sharedState.user_id)
         })
         .catch((error) => {
           // handle error
@@ -308,7 +308,7 @@ export default {
         .then((response) => {
           // handle success
           this.$swal('Success', 'You successfully enabled this comment', 'success')
-          this.getUserRecivedComments(this.sharedState.user_id)
+          this.getUserreceivedComments(this.sharedState.user_id)
         })
         .catch((error) => {
           // handle error
@@ -318,7 +318,7 @@ export default {
     }
   },
   created () {
-    this.getUserRecivedComments(this.sharedState.user_id)
+    this.getUserreceivedComments(this.sharedState.user_id)
     // 初始化 bootstrap-markdown 插件
     $(document).ready(function() {
       $("#replyCommentFormBody").markdown({
@@ -341,7 +341,7 @@ export default {
   // 当路由变化后(比如变更查询参数 page 和 per_page)重新加载数据
   beforeRouteUpdate (to, from, next) {
     next()
-    this.getUserRecivedComments(this.sharedState.user_id)
+    this.getUserreceivedComments(this.sharedState.user_id)
   }
 }
 </script>

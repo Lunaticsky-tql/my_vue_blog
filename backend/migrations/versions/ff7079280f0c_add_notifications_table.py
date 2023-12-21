@@ -32,7 +32,7 @@ def upgrade():
         batch_op.create_index(batch_op.f('ix_notifications_timestamp'), ['timestamp'], unique=False)
 
     with op.batch_alter_table('users', schema=None) as batch_op:
-        batch_op.add_column(sa.Column('last_recived_comments_read_time', sa.DateTime(), nullable=True))
+        batch_op.add_column(sa.Column('last_received_comments_read_time', sa.DateTime(), nullable=True))
         batch_op.add_column(sa.Column('last_follows_read_time', sa.DateTime(), nullable=True))
         batch_op.add_column(sa.Column('last_likes_read_time', sa.DateTime(), nullable=True))
         batch_op.add_column(sa.Column('last_followeds_posts_read_time', sa.DateTime(), nullable=True))
@@ -46,7 +46,7 @@ def downgrade():
         batch_op.drop_column('last_followeds_posts_read_time')
         batch_op.drop_column('last_likes_read_time')
         batch_op.drop_column('last_follows_read_time')
-        batch_op.drop_column('last_recived_comments_read_time')
+        batch_op.drop_column('last_received_comments_read_time')
 
     with op.batch_alter_table('notifications', schema=None) as batch_op:
         batch_op.drop_index(batch_op.f('ix_notifications_timestamp'))

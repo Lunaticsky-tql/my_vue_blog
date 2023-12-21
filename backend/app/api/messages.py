@@ -30,7 +30,7 @@ def create_message():
     db.session.add(message)
     # 给私信接收者发送新私信通知
     user.add_notification('unread_messages_count',
-                          user.new_recived_messages())
+                          user.new_received_messages())
     db.session.commit()
     response = jsonify(message.to_dict())
     response.status_code = 201
@@ -88,6 +88,6 @@ def delete_message(id):
     db.session.delete(message)
     # 给私信接收者发送新私信通知(需要自动减1)
     message.recipient.add_notification('unread_messages_count',
-                                       message.recipient.new_recived_messages())
+                                       message.recipient.new_received_messages())
     db.session.commit()
     return '', 204
